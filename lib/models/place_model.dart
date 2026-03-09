@@ -10,6 +10,9 @@ class Place {
   final double lat;
   final double lng;
   final String userId;
+  final double rating;
+  final int reviewCount;
+  final String? imageUrl;
 
   Place({
     required this.id,
@@ -21,6 +24,9 @@ class Place {
     required this.lat,
     required this.lng,
     required this.userId,
+    this.rating = 0.0,
+    this.reviewCount = 0,
+    this.imageUrl,
   });
 
   // Convert Firestore Doc to Place object
@@ -36,6 +42,9 @@ class Place {
       lat: (data['lat'] as num).toDouble(),
       lng: (data['lng'] as num).toDouble(),
       userId: data['userId'] ?? '',
+      rating: (data['rating'] as num?)?.toDouble() ?? 0.0,
+      reviewCount: data['reviewCount'] ?? 0,
+      imageUrl: data['imageUrl'],
     );
   }
 
@@ -49,6 +58,9 @@ class Place {
     'lat': lat,
     'lng': lng,
     'userId': userId,
+    'rating': rating,
+    'reviewCount': reviewCount,
+    'imageUrl': imageUrl,
     'timestamp': FieldValue.serverTimestamp(),
   };
 }

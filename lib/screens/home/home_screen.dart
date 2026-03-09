@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import '../directory/directory_screen.dart';
 import '../settings/settings_screen.dart';
-import '../directory/my_listings_screen.dart';
+import '../directory/bookmarks_screen.dart';
 import '../directory/map_view_screen.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -16,7 +16,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
   final List<Widget> _screens = [
     const DirectoryScreen(),
-    const MyListingsScreen(),
+    const BookmarksScreen(),
     const MapViewScreen(),
     const SettingsScreen(),
   ];
@@ -24,7 +24,6 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      // IndexedStack is great for keeping Map state alive
       body: IndexedStack(index: _currentIndex, children: _screens),
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: _currentIndex,
@@ -34,13 +33,10 @@ class _HomeScreenState extends State<HomeScreen> {
         unselectedItemColor: Colors.white60,
         onTap: (index) => setState(() => _currentIndex = index),
         items: const [
-          BottomNavigationBarItem(icon: Icon(Icons.search), label: "Directory"),
-          BottomNavigationBarItem(icon: Icon(Icons.list), label: "My Listings"),
-          BottomNavigationBarItem(icon: Icon(Icons.map), label: "Map View"),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.settings),
-            label: "Settings",
-          ),
+          BottomNavigationBarItem(icon: Icon(Icons.home), label: "Home"),
+          BottomNavigationBarItem(icon: Icon(Icons.bookmark), label: "Bookmarks"),
+          BottomNavigationBarItem(icon: Icon(Icons.rate_review), label: "Reviews"),
+          BottomNavigationBarItem(icon: Icon(Icons.settings), label: "Settings"),
         ],
       ),
     );

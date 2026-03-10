@@ -161,8 +161,9 @@ class _BookmarksScreenState extends State<BookmarksScreen> {
         type: BottomNavigationBarType.fixed,
         currentIndex: 1,
         items: const [
-          BottomNavigationBarItem(icon: Icon(Icons.home), label: "Services"),
-          BottomNavigationBarItem(icon: Icon(Icons.bookmark), label: "Bookings"),
+          BottomNavigationBarItem(icon: Icon(Icons.home), label: "Home"),
+          BottomNavigationBarItem(icon: Icon(Icons.bookmark), label: "Bookmarks"),
+          BottomNavigationBarItem(icon: Icon(Icons.map), label: "Map"),
           BottomNavigationBarItem(icon: Icon(Icons.settings), label: "Settings"),
         ],
       ),

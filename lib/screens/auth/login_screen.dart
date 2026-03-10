@@ -18,19 +18,57 @@ class _LoginScreenState extends State<LoginScreen> {
     final auth = Provider.of<AuthProvider>(context, listen: false);
     String? error;
 
+    // Show loading
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (context) => const Center(
+        child: CircularProgressIndicator(color: Colors.orange),
+      ),
+    );
+
     if (isLogin) {
-      error = await auth.logIn(_emailController.text, _passwordController.text);
+      error = await auth.logIn(_emailController.text.trim(), _passwordController.text);
     } else {
-      error = await auth.signUp(
-        _emailController.text,
-        _passwordController.text,
-      );
+      error = await auth.signUp(_emailController.text.trim(), _passwordController.text);
     }
 
+    // Hide loading
+    if (mounted) Navigator.pop(context);
+
     if (error != null && mounted) {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text(error)));
+      // Show user-friendly error
+      String friendlyError = error;
+      if (error.contains('network')) {
+        friendlyError = 'Network error. Please check your internet connection and ensure Firebase Authentication is enabled in Firebase Console.';
+      } else if (error.contains('email-already-in-use')) {
+        friendlyError = 'This email is already registered. Please login instead.';
+      } else if (error.contains('weak-password')) {
+        friendlyError = 'Password is too weak. Use at least 6 characters.';
+      } else if (error.contains('invalid-email')) {
+        friendlyError = 'Invalid email address.';
+      } else if (error.contains('user-not-found')) {
+        friendlyError = 'No account found with this email.';
+      } else if (error.contains('wrong-password')) {
+        friendlyError = 'Incorrect password.';
+      }
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(friendlyError),
+          backgroundColor: Colors.red,
+          duration: const Duration(seconds: 5),
+        ),
+      );
+    } else if (!isLogin && mounted) {
+      // Show success message for signup
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Account created! Please check your email to verify.'),
+          backgroundColor: Colors.green,
+          duration: Duration(seconds: 3),
+        ),
+      );
     }
   }
 

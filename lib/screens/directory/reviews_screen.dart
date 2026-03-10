@@ -149,9 +149,10 @@ class ReviewsScreen extends StatelessWidget {
         type: BottomNavigationBarType.fixed,
         currentIndex: 2,
         items: const [
-          BottomNavigationBarItem(icon: Icon(Icons.bookmark_border), label: "Bookmarks"),
-          BottomNavigationBarItem(icon: Icon(Icons.rate_review), label: "Reviews"),
+          BottomNavigationBarItem(icon: Icon(Icons.home), label: "Home"),
           BottomNavigationBarItem(icon: Icon(Icons.bookmark), label: "Bookmarks"),
+          BottomNavigationBarItem(icon: Icon(Icons.rate_review), label: "Reviews"),
+          BottomNavigationBarItem(icon: Icon(Icons.settings), label: "Settings"),
         ],
       ),
     );

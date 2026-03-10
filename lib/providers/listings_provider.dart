@@ -79,9 +79,16 @@ class ListingsProvider with ChangeNotifier {
 
   List<Place> searchAndFilter(String query, String category) {
     return _places.where((place) {
-      bool matchesSearch = place.name.toLowerCase().contains(query.toLowerCase());
-      bool matchesCategory = category == "Cafés" || 
-                            place.category.toLowerCase().contains(category.toLowerCase());
+      // Search matches name, address, or description
+      bool matchesSearch = query.isEmpty ||
+          place.name.toLowerCase().contains(query.toLowerCase()) ||
+          place.address.toLowerCase().contains(query.toLowerCase()) ||
+          place.description.toLowerCase().contains(query.toLowerCase());
+      
+      // Category filter - match if "All" or category contains the filter
+      bool matchesCategory = category == "All" ||
+          place.category.toLowerCase().contains(category.toLowerCase());
+      
       return matchesSearch && matchesCategory;
     }).toList();
   }

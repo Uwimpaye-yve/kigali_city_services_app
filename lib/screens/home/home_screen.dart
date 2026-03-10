@@ -11,6 +11,7 @@ class HomeScreen extends StatefulWidget {
   State<HomeScreen> createState() => _HomeScreenState();
 }
 
+//stores index of the currently selected
 class _HomeScreenState extends State<HomeScreen> {
   int _currentIndex = 0;
 

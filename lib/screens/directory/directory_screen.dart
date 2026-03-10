@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../models/place_model.dart';
 import '../../providers/listings_provider.dart';
+import '../../providers/auth_provider.dart';
 import 'place_detail_screen.dart';
+import 'add_listing_screen.dart';
 import 'package:geolocator/geolocator.dart';
 import 'dart:math';
 
@@ -14,7 +16,7 @@ class DirectoryScreen extends StatefulWidget {
 
 class _DirectoryScreenState extends State<DirectoryScreen> {
   String _searchQuery = "";
-  String _selectedCategory = "Cafés";
+  String _selectedCategory = "All";
   Position? _currentPosition;
 
   @override
@@ -59,6 +61,25 @@ class _DirectoryScreenState extends State<DirectoryScreen> {
 
   double _toRadians(double degree) => degree * pi / 180;
 
+  void _addSampleData(BuildContext context) async {
+    final provider = Provider.of<ListingsProvider>(context, listen: false);
+    final userId = Provider.of<AuthProvider>(context, listen: false).user?.uid ?? 'test';
+
+    final samples = [
+      Place(id: '', name: 'Kimironko Café', category: 'Café', address: 'Kimironko, Kigali', contact: '+250 788 123 456', description: 'Popular café with fresh coffee', lat: -1.9441, lng: 30.1035, userId: userId, rating: 4.8, reviewCount: 45),
+      Place(id: '', name: 'Green Bean Coffee', category: 'Café', address: 'City Tower', contact: '+250 788 234 567', description: 'Premium coffee shop', lat: -1.9506, lng: 30.0588, userId: userId, rating: 4.0, reviewCount: 32),
+      Place(id: '', name: 'City Pharmacy', category: 'Pharmacy', address: 'Downtown', contact: '+250 788 345 678', description: '24/7 pharmacy', lat: -1.9536, lng: 30.0606, userId: userId, rating: 4.5, reviewCount: 28),
+    ];
+
+    for (var place in samples) await provider.addPlace(place);
+    
+    if (context.mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Sample data added!'), backgroundColor: Colors.green),
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -66,10 +87,7 @@ class _DirectoryScreenState extends State<DirectoryScreen> {
       appBar: AppBar(
         backgroundColor: const Color(0xFF0D1B2A),
         title: const Text("Kigali City", style: TextStyle(color: Colors.white)),
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: Colors.white),
-          onPressed: () {},
-        ),
+        automaticallyImplyLeading: false,
       ),
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -79,7 +97,7 @@ class _DirectoryScreenState extends State<DirectoryScreen> {
             child: SingleChildScrollView(
               scrollDirection: Axis.horizontal,
               child: Row(
-                children: ["Cafés", "Pharmacies", "Coffee"].map((cat) => Padding(
+                children: ["All", "Cafés", "Pharmacies", "Hospitals", "Parks"].map((cat) => Padding(
                   padding: const EdgeInsets.only(right: 8),
                   child: ChoiceChip(
                     label: Text(cat),
@@ -137,7 +155,50 @@ class _DirectoryScreenState extends State<DirectoryScreen> {
                   );
                 }
                 
+                final allPlaces = listingsProvider.places;
                 final filtered = listingsProvider.searchAndFilter(_searchQuery, _selectedCategory);
+
+                if (allPlaces.isEmpty) {
+                  return Center(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        const Icon(Icons.inbox, color: Colors.white30, size: 80),
+                        const SizedBox(height: 16),
+                        const Text('No listings yet', style: TextStyle(color: Colors.white, fontSize: 18)),
+                        const SizedBox(height: 8),
+                        const Text('Add sample data to get started', style: TextStyle(color: Colors.white70)),
+                        const SizedBox(height: 24),
+                        ElevatedButton(
+                          style: ElevatedButton.styleFrom(backgroundColor: Colors.orange),
+                          onPressed: () => _addSampleData(context),
+                          child: const Text('Add Sample Data', style: TextStyle(color: Colors.white)),
+                        ),
+                      ],
+                    ),
+                  );
+                }
+
+                if (filtered.isEmpty) {
+                  return Center(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        const Icon(Icons.search_off, color: Colors.white30, size: 80),
+                        const SizedBox(height: 16),
+                        Text('No results', style: const TextStyle(color: Colors.white, fontSize: 18)),
+                        const SizedBox(height: 8),
+                        Text('Total: ${allPlaces.length} | Category: $_selectedCategory', style: const TextStyle(color: Colors.white70)),
+                        const SizedBox(height: 16),
+                        ElevatedButton(
+                          style: ElevatedButton.styleFrom(backgroundColor: Colors.orange),
+                          onPressed: () => setState(() { _searchQuery = ''; _selectedCategory = 'All'; }),
+                          child: const Text('Clear Filters', style: TextStyle(color: Colors.white)),
+                        ),
+                      ],
+                    ),
+                  );
+                }
 
                 return ListView.builder(
                   padding: const EdgeInsets.symmetric(horizontal: 16),
@@ -199,6 +260,16 @@ class _DirectoryScreenState extends State<DirectoryScreen> {
             ),
           ),
         ],
+      ),
+      floatingActionButton: FloatingActionButton(
+        backgroundColor: Colors.orange,
+        onPressed: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => const AddListingScreen()),
+          );
+        },
+        child: const Icon(Icons.add, color: Colors.white),
       ),
     );
   }

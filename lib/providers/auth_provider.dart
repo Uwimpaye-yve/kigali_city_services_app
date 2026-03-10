@@ -45,10 +45,14 @@ class AuthProvider with ChangeNotifier {
     await _auth.signOut();
   }
 
-  // REFRESH USER (To check if they verified email)
+  // If user verified 
   Future<void> reloadUser() async {
-    await _user?.reload();
-    _user = _auth.currentUser;
-    notifyListeners();
+    try {
+      await _auth.currentUser?.reload();
+      _user = _auth.currentUser;
+      notifyListeners();
+    } catch (e) {
+      print('Error reloading user: $e');
+    }
   }
 }

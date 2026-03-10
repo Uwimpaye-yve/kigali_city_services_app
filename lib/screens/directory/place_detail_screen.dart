@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:provider/provider.dart';
+import 'package:flutter/foundation.dart' show kIsWeb;
 import '../../models/place_model.dart';
 import '../../models/review_model.dart';
 import '../../services/firestore_service.dart';
@@ -41,14 +42,35 @@ class PlaceDetailScreen extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            // Map or placeholder
             Container(
               height: 200,
               color: const Color(0xFF1A2332),
-              child: place.imageUrl != null
-                  ? Image.network(place.imageUrl!, fit: BoxFit.cover)
-                  : const Center(
-                      child: Icon(Icons.image, size: 80, color: Colors.white30),
-                    ),
+              child: kIsWeb
+                  ? Center(
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          const Icon(Icons.map, size: 60, color: Colors.white30),
+                          const SizedBox(height: 8),
+                          const Text(
+                            'Map not available on web',
+                            style: TextStyle(color: Colors.white70),
+                          ),
+                          const SizedBox(height: 8),
+                          TextButton.icon(
+                            icon: const Icon(Icons.open_in_new, color: Colors.orange),
+                            label: const Text('Open in Google Maps', style: TextStyle(color: Colors.orange)),
+                            onPressed: _launchNavigation,
+                          ),
+                        ],
+                      ),
+                    )
+                  : place.imageUrl != null
+                      ? Image.network(place.imageUrl!, fit: BoxFit.cover)
+                      : const Center(
+                          child: Icon(Icons.image, size: 80, color: Colors.white30),
+                        ),
             ),
             Padding(
               padding: const EdgeInsets.all(16.0),
